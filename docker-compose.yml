@@ -1,0 +1,39 @@
+
+version: '3'
+
+services:
+  app:
+    build: ./app
+    restart: always
+    environment:
+      DB_HOST: db
+      DB_NAME: database
+      DB_USER: user
+      DB_PASS: password
+    ports:
+      - '4000:4000'
+    depends_on:
+      - db
+
+  nginx:
+    build: ./nginx
+    restart: always
+    ports:
+      - '80:80'
+      - '443:443'
+    depends_on:
+      - app
+
+  db:
+    build: ./db
+    restart: always
+    environment:
+      POSTGRES_USER: user 
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: database
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - '5432:5432'
+
+
